@@ -1,6 +1,6 @@
 <?php
     require_once __DIR__."/../vendor/autoload.php";
-    require_once __DIR__."/../src/Place/php";
+    require_once __DIR__."/../src/Place.php";
 
     session_start();
 
@@ -14,7 +14,7 @@
     ));
 
     $app->get("/", function() use ($app) {
-        return $app['twig']->render('places.html.twig', array('places' => Task::getAll()));
+        return $app['twig']->render('places.html.twig', array('places' => Place::getAll()));
     });
 
     $app->post("/places", function() use ($app) {
@@ -25,7 +25,7 @@
 
     $app->post("/delete_places", function() use ($app) {
         Place::deleteAll();
-        return $app['twig']->render('delete_places.html.twig')
+        return $app['twig']->render('delete_places.html.twig');
     });
 
     return $app;
