@@ -1,14 +1,12 @@
+<?php
+
 class Place
 {
     private $location;
-    private $photo;
-    private $duration;
 
-    function __construct($location, $photo, $duration)
+    function __construct($location)
     {
         $this->location = $location;
-        $this->photo = $photo;
-        $this->duration = $duration;
     }
 
     function getLocation()
@@ -25,4 +23,10 @@ class Place
     {
         return $_SESSION['list_of_places'];
     }
+
+    static function deleteAll()
+    {
+        $_SESSION['list_of_places'] = array();
+    }
 }
+?>
