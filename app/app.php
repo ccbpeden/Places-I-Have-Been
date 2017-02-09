@@ -4,64 +4,33 @@
 
     session_start();
 
+    if (empty($_SESSION['list_of_places'])) {
+        $_SESSION['list_of_places'] = array();
+    }
+
     $app = new Silex\Application();
 
     $app->register(new Silex\Provider\TwigServiceProvider(), array('twig.path' => __DIR__.'/../views'
     ));
 
-    $app->get("/", function(){
-      
-        $output = "";
+    $app->get("/", function() use ($app) {
 
-        $all_places = Place::getAll;
+        return $app['twig']->render('places.html.twig', array('places' => Task::getAll()));
+    });
 
-        if(!empty($all_places)) {
-            $output .= "
-                <h1>Places You Have Been</h1>
-                ";
-            foreach ($all_places as $place) {
-                $output .= "<p>" . $place->getLocation() . "</p>";
-            }
-        }
+    $app->post("/places", function() use ($app) {
+        $place = new Place($_POST['location']);
+        $place->save();
+        return $app['twig']->render('create_place.html.twig', array('newplace' => $place));
+    });
 
-    $output .= "
-        <form action='/places' method='post'>
-            <label for='location'>Place Name</label>
-            <input id='location' name='location' type='text'>
+    $app->post("/delete_places", function() use ($app) {
 
-            <button type='submit'>Add Place</button>
-        </form>
-    ";
+        Place::deleteAll();
 
-    $output .= "
-        <form action='/delete_places' method='post'>
-            <button type='submit'>delete</button>
-        </form>
-    ";
+        return $app['twig']->render('delete_places.html.twig')
+    });
 
-    return $output;
-});
-
-$app->post("/places", function() {
-    $place = new Place($_POST['location']);
-    $location->save();
-    return "
-        <h1>You have marked a location!</h1>
-        <p>" . $place->getLocation() . "</p>
-        <p><a href='/'>View the list of places you have been </a></p>
-    ";
-});
-
-$app->post("/delete_places", function() {
-
-    Place::deleteAll();
-
-    return "
-        <h1>List Cleared!</h1>
-        <p><a href='/'>Home</a></p>
-    ";
-});
-
-return $app;
+    return $app;
 
 ?>
